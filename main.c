@@ -165,7 +165,7 @@ int main(int argc, char** argv)
         }
         else printf("Температура воздуха: %s °C, ", ValWeather -> u.object.values[27].value -> u.string.ptr); 
         
-        if(strcmp(ValWeather -> u.object.values[6].name, "tempC") || (ValWeather -> u.object.values[6].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[6].name, "WindChillC") || (ValWeather -> u.object.values[6].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
