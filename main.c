@@ -33,8 +33,8 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
  
 int main(int argc, char** argv)
 {
-  char *UrlAdrsHead = {"https://wttr.in/"};
-  char *UrlAdrsTail = {"?format=j1&lang=ru"};
+  char *UrlAdrsHead = "https://wttr.in/";
+  char *UrlAdrsTail = "?format=j1&lang=ru";
   char *UrlAdrs;
 
   CURL *curl_handle;
@@ -52,15 +52,18 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  UrlAdrs = (char *)malloc(sizeof(char) * (strlen(UrlAdrsHead) + 
-                                           strlen(argv[1]) + 
-                                           strlen(UrlAdrsTail) + 1));
+  UrlAdrs = (char *)calloc((strlen(UrlAdrsHead) + strlen(argv[1]) + strlen(UrlAdrsTail) + 1), sizeof(char));
+  if(!UrlAdrs) 
+  {
+    printf ("Возникла ошибка привыделении памяти. Программа будет остановлена");
+    exit (1);
+  }
  
   UrlAdrs = strcat(UrlAdrs, UrlAdrsHead);
   UrlAdrs = strcat(UrlAdrs, argv[1]);
   UrlAdrs = strcat(UrlAdrs, UrlAdrsTail);
   
-  chunk.memory = malloc(1);  /* will be grown as needed by the realloc above */
+  chunk.memory = NULL;  /* will be grown as needed by the realloc above */
   chunk.size = 0;    /* no data at this point */
  
   curl_global_init(CURL_GLOBAL_ALL);
@@ -107,7 +110,8 @@ int main(int argc, char** argv)
         ValWeather = value->
                      u.object.values[3].value ->       // Weather
                      u.array.values[0];                // array[0] = текущий день      
-        if((ValWeather -> u.object.values[3].name != "date") && (ValWeather -> u.object.values[3].value -> type != json_string))
+
+        if(strcmp(ValWeather -> u.object.values[3].name, "date") || (ValWeather -> u.object.values[3].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
@@ -121,7 +125,7 @@ int main(int argc, char** argv)
                      u.array.values[4] ->              // array[4] = 12 часов
                      u.object.values[22].value ->      // lang_ru
                      u.array.values[0];               // array[0]
-        if((ValWeather -> u.object.values[0].name != "value") && (ValWeather -> u.object.values[0].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[0].name, "value") || (ValWeather -> u.object.values[0].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
@@ -133,35 +137,35 @@ int main(int argc, char** argv)
                      u.array.values[0] ->              // array[0] = текущий день      
                      u.object.values[4].value ->       // hourly
                      u.array.values[4];                // array[4] = 12 часов
-        if((ValWeather -> u.object.values[36].name != "winddir16Point") && (ValWeather -> u.object.values[36].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[36].name, "winddir16Point") || (ValWeather -> u.object.values[36].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
         }
         else printf("Направление ветра: %s\n", ValWeather -> u.object.values[36].value -> u.string.ptr); // направление ветра
         
-        if((ValWeather -> u.object.values[38].name != "windspeedKmph") && (ValWeather -> u.object.values[38].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[38].name, "windspeedKmph") || (ValWeather -> u.object.values[38].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
         }
         else printf("Скорость ветра: %s км/ч ", ValWeather -> u.object.values[38].value -> u.string.ptr);
                                    
-        if((ValWeather -> u.object.values[8].name != "WindGustKmph") && (ValWeather -> u.object.values[8].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[8].name, "WindGustKmph") || (ValWeather -> u.object.values[8].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
         }
         else printf("с порывами до %s км/ч\n", ValWeather -> u.object.values[8].value -> u.string.ptr); 
 
-        if((ValWeather -> u.object.values[27].name != "tempC") && (ValWeather -> u.object.values[27].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[27].name, "tempC") || (ValWeather -> u.object.values[27].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
         }
         else printf("Температура воздуха: %s °C, ", ValWeather -> u.object.values[27].value -> u.string.ptr); 
         
-        if((ValWeather -> u.object.values[6].name != "tempC") && (ValWeather -> u.object.values[6].value -> type != json_string))
+        if(strcmp(ValWeather -> u.object.values[6].name, "tempC") || (ValWeather -> u.object.values[6].value -> type != json_string))
         {
           printf("Json content formatting error\n");
           return 0;
